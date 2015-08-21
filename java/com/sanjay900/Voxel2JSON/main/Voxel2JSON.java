@@ -37,13 +37,14 @@ public class Voxel2JSON {
 	static String path;
 	public static MainChunk mainChunk;
 	public static Pallete p;
-	static String name;
+	public static String name;
 	public static int size = 16;
 	final static JFileChooser fc = new JFileChooser();
 	@SuppressWarnings("serial")
 	static class LabelAccessory extends JPanel {
 		public JCheckBox bigmodel = new JCheckBox();
 		public JCheckBox uv = new JCheckBox();
+		public JCheckBox merge = new JCheckBox();
 		public JTextField[] thirdperson = new JTextField[9];
 		public JTextField[] firstperson = new JTextField[9];
 		public JTextField[] gui = new JTextField[9];
@@ -86,6 +87,11 @@ public class Voxel2JSON {
 			this.add(text);
 			this.add(uv);
 			uv.setSelected(true);
+			text = new JLabel("Merge Voxels?", SwingConstants.CENTER);
+			text.setPreferredSize(new Dimension(140, 10));
+			this.add(text);
+			this.add(merge);
+			merge.setSelected(true);
 			text = new JLabel("Third Person", SwingConstants.CENTER);
 			text.setPreferredSize(new Dimension(150, 10));
 			this.add(text);
@@ -225,7 +231,7 @@ public class Voxel2JSON {
 		FileInputStream f = new FileInputStream(file);
 		DataInputStream ds = new DataInputStream(f);
 		System.out.println("Magic:" + Utils.readString(ds)+" Version:"+Utils.getInt(ds));
-		mainChunk = new MainChunk(ds);
+		mainChunk = new MainChunk(ds,la.merge.isSelected());
 		ds.close();
 		f.close();
 		JSONObject object = new JSONObject();
@@ -234,6 +240,8 @@ public class Voxel2JSON {
 		BigDecimal xdiff = s.divide(mainChunk.sizeChunk.x,3, RoundingMode.HALF_UP);
 		BigDecimal ydiff = s.divide(mainChunk.sizeChunk.y,3, RoundingMode.HALF_UP);
 		BigDecimal zdiff = s.divide(mainChunk.sizeChunk.z,3, RoundingMode.HALF_UP);
+		int i = 0;
+		mainChunk.voxelChunk.frame.contentPane.progressBar.setMaximum(mainChunk.voxelChunk.voxelsr.size());
 		for (RenderVoxel v:mainChunk.voxelChunk.voxelsr) {
 			JSONObject element = new JSONObject();
 			BigDecimal zero = BigDecimal.ZERO;
@@ -257,8 +265,11 @@ public class Voxel2JSON {
 				element.put("faces", faces);
 				elements.put(element);
 			}
+			mainChunk.voxelChunk.frame.contentPane.subStatus.setText("Saving face "+ (++i)+" to JSON model");
+
+			mainChunk.voxelChunk.frame.contentPane.progressBar.setValue(i);
 		}
-		infoBox(new String[]{"Voxel Count: " +elements.length()},"Voxel Count");
+		mainChunk.voxelChunk.frame.contentPane.lblTotal.setText("Total: "+elements.length());
 		JSONObject textures = new JSONObject();
 		textures.put(name, "blocks/"+name);
 		textures.put("particle", "blocks/"+name);
@@ -270,6 +281,10 @@ public class Voxel2JSON {
 				new FileOutputStream(path+".json "), "utf-8"))) {
 			writer.write(object.toString());
 		}
+		mainChunk.voxelChunk.frame.contentPane.subStatus.setText("Saved Model!");
+		mainChunk.voxelChunk.frame.contentPane.overallInfo.setText("Saved Model!");
+		mainChunk.voxelChunk.frame.contentPane.overallProgress.setValue(6);
+		mainChunk.voxelChunk.frame.contentPane.btnOpenCompletedFile.setEnabled(true);
 	}
 	private static double[] floatc(BigDecimal[] old) {
 		double[] floats=new double[old.length];

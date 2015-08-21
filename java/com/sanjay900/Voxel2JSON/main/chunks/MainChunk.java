@@ -12,10 +12,10 @@ import com.sanjay900.Voxel2JSON.main.Voxel2JSON;
 public class MainChunk extends Chunk {
 	public SizeChunk sizeChunk;
 	public VoxelChunk voxelChunk;
-	public MainChunk(DataInputStream ds) throws IOException {
+	public MainChunk(DataInputStream ds, boolean b) throws IOException {
 		super(ds);
 		sizeChunk = new SizeChunk(ds);
-		voxelChunk = new VoxelChunk(ds,this);
+		voxelChunk = new VoxelChunk(ds,this,b);
 		if (ds.available() > 0) {
 			Voxel2JSON.p = new Pallete(ds);
 		} else {

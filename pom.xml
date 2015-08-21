@@ -26,6 +26,18 @@
 			<version>1.14.8</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+			<version>1.2.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-common</artifactId>
+			<version>1.8.1</version>
+			<scope>compile</scope>
+		</dependency>
 		
 	</dependencies>
 	<build>
