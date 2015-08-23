@@ -40,8 +40,8 @@ public class Pallete {
 			x = x2;
 			y=y2;
 		}
-		int x;
-		int y;
+		public int x;
+		public int y;
 		public String toString() {
 			return "["+x+","+y+"]";
 		}

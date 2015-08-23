@@ -1,4 +1,4 @@
-package com.sanjay900.Voxel2JSON.main.chunks;
+package com.sanjay900.Voxel2JSON.main.ProgressFrame;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -9,23 +9,6 @@ import javax.swing.border.EmptyBorder;
 public class ProgressFrame extends javax.swing.JFrame {
 
 	public ProgressPanel contentPane;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ProgressFrame frame = new ProgressFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	/**
 	 * Create the frame.
 	 */

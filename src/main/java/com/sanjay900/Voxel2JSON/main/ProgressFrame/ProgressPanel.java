@@ -1,12 +1,13 @@
-package com.sanjay900.Voxel2JSON.main.chunks;
+package com.sanjay900.Voxel2JSON.main.ProgressFrame;
 
 import java.awt.Desktop;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,7 +19,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 import com.sanjay900.Voxel2JSON.main.Voxel2JSON;
-import java.awt.event.ActionListener;
 
 public class ProgressPanel extends JPanel {
 	public JLabel lblConvertingPleaseWait;
@@ -106,6 +106,7 @@ public class ProgressPanel extends JPanel {
 				if (Desktop.isDesktopSupported()) {
 					try {
 						Desktop.getDesktop().open(Paths.get(Voxel2JSON.getPath()).getParent().toFile());
+						getTopLevelAncestor().dispatchEvent(new WindowEvent((Window) getTopLevelAncestor(), WindowEvent.WINDOW_CLOSING));
 					} catch (IOException ex) { /* TODO: error handling */ }
 				} else { /* TODO: error handling */ }
 			}

@@ -1,6 +1,5 @@
 package com.sanjay900.Voxel2JSON.main.chunks;
 
-import java.awt.EventQueue;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import com.sanjay900.Voxel2JSON.main.Utils;
 import com.sanjay900.Voxel2JSON.main.Voxel2JSON;
+import com.sanjay900.Voxel2JSON.main.ProgressFrame.ProgressFrame;
 
 import lombok.AllArgsConstructor;
 
@@ -110,8 +110,7 @@ public class VoxelChunk extends Chunk{
 						done2 = false;
 						while (!done2) {
 							for (Coordinate c: voxel.getRelatives(bl)) {
-								if (voxelc.get(c) == null) done2=true;
-								if (!done2 && voxelc.get(c).colourIndex != voxel.colourIndex) done2=true;
+								if (voxelc.get(c) == null || voxelc.get(c).colourIndex != voxel.colourIndex) done2=true;
 							}
 							if (!done2) {
 								voxel.expand(bl);
@@ -131,11 +130,10 @@ public class VoxelChunk extends Chunk{
 			frame.contentPane.subStatus.setText("Merging face "+(numVoxels-voxels.size())+ " out of "+numVoxels);
 
 		}
-		
 		if (merge) {
 
 			frame.contentPane.progressBar.setMaximum(voxels2.size());
-			frame.contentPane.overallInfo.setText("Culling faces");
+			frame.contentPane.overallInfo.setText("Removing Unseen faces");
 			frame.contentPane.overallProgress.setValue(4);
 			int i2 =0;
 			for (Voxel voxel2: voxels2) {
@@ -346,10 +344,10 @@ public class VoxelChunk extends Chunk{
 				yamt--;
 				yamt = yamt==0?-1:yamt;
 				return;
-			case ZADD:
+			case ZSUB:
 				zamt++;
 				return;
-			case ZSUB:
+			case ZADD:
 				zamt--;
 				zamt = zamt==0?-1:zamt;
 				return;
