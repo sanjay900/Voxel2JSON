@@ -1,4 +1,4 @@
-package com.sanjay900.Voxel2JSON.main.ProgressFrame;
+package com.sanjay900.Voxel2JSON.progress;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;

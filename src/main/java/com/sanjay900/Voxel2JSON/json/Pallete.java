@@ -1,4 +1,4 @@
-package com.sanjay900.Voxel2JSON.main;
+package com.sanjay900.Voxel2JSON.json;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -8,7 +8,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.sanjay900.Voxel2JSON.main.chunks.PalleteChunk;
+import com.sanjay900.Voxel2JSON.Voxel2JSON;
+import com.sanjay900.Voxel2JSON.chunks.PalleteChunk;
 
 public class Pallete {
 	BufferedImage bi;

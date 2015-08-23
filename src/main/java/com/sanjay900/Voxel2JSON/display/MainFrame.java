@@ -1,12 +1,13 @@
-package com.sanjay900.Voxel2JSON.main.DisplayFrame;
+package com.sanjay900.Voxel2JSON.display;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,12 +15,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.json.JSONObject;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -40,11 +42,13 @@ public class MainFrame extends JFrame {
 	JSlider sx;
 	JSlider sy;
 	JSlider sz;
+	HashMap<ViewType,DisplayObject> displays = new HashMap<>();
 	ViewType type = ViewType.IN_HAND;
 	/**
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		Arrays.stream(ViewType.values()).forEach(type->displays.put(type, new DisplayObject()));
 		setTitle("Item Display Properties - In Hand");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 490, 411);
@@ -56,8 +60,8 @@ public class MainFrame extends JFrame {
 		JButton btnInHand = new JButton("In Hand");
 		btnInHand.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				type = ViewType.IN_HAND;
 				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+				loadDisplay(ViewType.IN_HAND);
 			}
 		});
 		menuBar.add(btnInHand);
@@ -65,8 +69,8 @@ public class MainFrame extends JFrame {
 		JButton btnOnHead = new JButton("On Head");
 		btnOnHead.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				type = ViewType.ON_HEAD;
 				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+				loadDisplay(ViewType.ON_HEAD);
 			}
 		});
 		menuBar.add(btnOnHead);
@@ -75,32 +79,32 @@ public class MainFrame extends JFrame {
 		menuBar.add(btnOnFloor);
 		btnOnFloor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				type = ViewType.ON_FLOOR;
 				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+				loadDisplay(ViewType.ON_FLOOR);
 			}
 		});
 		JButton btnOnWall = new JButton("On Wall");
 		menuBar.add(btnOnWall);
 		btnOnWall.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				type = ViewType.ON_WALL;
 				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+				loadDisplay(ViewType.ON_WALL);
 			}
 		});
 		JButton btnstPerson = new JButton("First Person");
 		menuBar.add(btnstPerson);
 		btnstPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				type = ViewType.FIRST_PERSON;
 				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+				loadDisplay(ViewType.FIRST_PERSON);
 			}
 		});
 		JButton btnGui = new JButton("GUI");
 		menuBar.add(btnGui);
 		btnGui.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				type = ViewType.GUI;
 				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+				loadDisplay(ViewType.GUI);
 			}
 		});
 		contentPane = new JPanel();
@@ -264,31 +268,83 @@ public class MainFrame extends JFrame {
 		scale.add(sz, "2, 4, fill, fill");
 		scale.add(szl, "3, 4, fill, fill");
 
-		rxl.addActionListener(new SliderSync(rxl,rx));
-		ryl.addActionListener(new SliderSync(ryl,ry));
-		rzl.addActionListener(new SliderSync(rzl,rz));
-		txl.addActionListener(new SliderSync(txl,tx));
-		tyl.addActionListener(new SliderSync(tyl,ty));
-		tzl.addActionListener(new SliderSync(tzl,tz));
-		sxl.addActionListener(new SliderSync(sxl,sx));
-		syl.addActionListener(new SliderSync(syl,sy));
-		szl.addActionListener(new SliderSync(szl,sz));
+		rxl.getDocument().addDocumentListener(new SliderSync(rxl,rx));
+		ryl.getDocument().addDocumentListener(new SliderSync(ryl,ry));
+		rzl.getDocument().addDocumentListener(new SliderSync(rzl,rz));
+		txl.getDocument().addDocumentListener(new SliderSync(txl,tx));
+		tyl.getDocument().addDocumentListener(new SliderSync(tyl,ty));
+		tzl.getDocument().addDocumentListener(new SliderSync(tzl,tz));
+		sxl.getDocument().addDocumentListener(new SliderSync(sxl,sx));
+		syl.getDocument().addDocumentListener(new SliderSync(syl,sy));
+		szl.getDocument().addDocumentListener(new SliderSync(szl,sz));
+	}
+	protected void loadDisplay(ViewType newType) {
+		DisplayObject old = displays.get(type);
+		old.rx = rx.getValue()/100f;
+		old.ry = ry.getValue()/100f;
+		old.rz = rz.getValue()/100f;
+		old.sx = sx.getValue()/100f;
+		old.sy = sy.getValue()/100f;
+		old.sz = sz.getValue()/100f;
+		old.tx = tx.getValue()/100f;
+		old.ty = ty.getValue()/100f;
+		old.tz = tz.getValue()/100f;
+		displays.put(type, old);
+		DisplayObject newObj = displays.get(newType);
+		rx.setValue((int) (newObj.rx*100));
+		ry.setValue((int) (newObj.ry*100));
+		rz.setValue((int) (newObj.rz*100));
+		tx.setValue((int) (newObj.tx*100));
+		ty.setValue((int) (newObj.ty*100));
+		tz.setValue((int) (newObj.tz*100));
+		sx.setValue((int) (newObj.sx*100));
+		sy.setValue((int) (newObj.sy*100));
+		sz.setValue((int) (newObj.sz*100));
+		type = newType;
 	}
 	@AllArgsConstructor
-	public class SliderSync implements ActionListener {
+	public class SliderSync implements DocumentListener {
 		JTextField component;
 		JSlider slider;
-		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(DocumentEvent e) {
+			ChangeListener[] cl = Arrays.copyOf(slider.getChangeListeners(),slider.getChangeListeners().length);
+			Arrays.stream(cl).forEach(slider::removeChangeListener);
 			float f = 0;
 			try {
 				f = Float.parseFloat(component.getText());
 				slider.setValue((int) (f*100));
 			} catch (Exception ex) {
-				component.setText(slider.getValue()/100F+"");
+				slider.setValue(100);
 			}
+			Arrays.stream(cl).forEach(slider::addChangeListener);
+		}
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			actionPerformed(e);
+		}
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			actionPerformed(e);
+		}
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			actionPerformed(e);
 		}
 		
+	}
+	public void fromDisplay(JSONObject display) {
+		for (ViewType v: ViewType.values()) {
+			if (display.has(v.getModelName())) {
+				DisplayObject obj = new DisplayObject();
+				obj.fromJSON(display.getJSONObject(v.getModelName()));
+				displays.put(v, obj);
+			}
+		}
+	}
+	public JSONObject getDisplay() {
+		JSONObject display = new JSONObject();
+		displays.entrySet().stream().forEach(entry -> {if (entry.getValue().toJSON().length() != 0) display.put(entry.getKey().getModelName(), entry.getValue().toJSON());});
+		return display;
 	}
 
 }

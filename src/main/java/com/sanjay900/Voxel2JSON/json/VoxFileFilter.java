@@ -1,10 +1,10 @@
-package com.sanjay900.Voxel2JSON.main;
+package com.sanjay900.Voxel2JSON.json;
 
 import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-public class JSONFileFilter extends FileFilter {
+public class VoxFileFilter extends FileFilter {
 	public boolean accept(File f) {
 	    if (f.isDirectory()) {
 	        return true;
@@ -12,7 +12,7 @@ public class JSONFileFilter extends FileFilter {
 
 	    String extension = getExtension(f);
 	    if (extension != null) {
-	        if (extension.equals("json")) {
+	        if (extension.equals("vox")) {
 	                return true;
 	        } else {
 	            return false;
@@ -34,6 +34,6 @@ public class JSONFileFilter extends FileFilter {
 
 	@Override
 	public String getDescription() {
-		return "JSON Models (*.json)";
+		return "Voxelised Models (*.vox)";
 	}
 }

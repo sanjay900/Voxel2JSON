@@ -1,4 +1,4 @@
-package com.sanjay900.Voxel2JSON.main.chunks;
+package com.sanjay900.Voxel2JSON.chunks;
 
 import java.awt.Color;
 import java.io.DataInputStream;
@@ -17,10 +17,4 @@ public class PalleteChunk extends Chunk{
 			pallete[i] = new Color(r,g,b);
 		}
 	}
-	@Override
-	public void printExtraInfo() {
-		System.out.println("Pallete: "+Arrays.toString(pallete));
-		
-	}
-
 }

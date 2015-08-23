@@ -1,4 +1,4 @@
-package com.sanjay900.Voxel2JSON.main;
+package com.sanjay900.Voxel2JSON;
 
 import java.awt.Dimension;
 import java.io.BufferedWriter;
@@ -10,35 +10,40 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.sanjay900.Voxel2JSON.main.Pallete.XY;
-import com.sanjay900.Voxel2JSON.main.ProgressFrame.ProgressFrame;
-import com.sanjay900.Voxel2JSON.main.DisplayFrame.MainDisplay;
-import com.sanjay900.Voxel2JSON.main.DisplayFrame.MainFrame;
-import com.sanjay900.Voxel2JSON.main.chunks.MainChunk;
-import com.sanjay900.Voxel2JSON.main.chunks.VoxelChunk.RenderVoxel;
+import com.sanjay900.Voxel2JSON.chunks.MainChunk;
+import com.sanjay900.Voxel2JSON.chunks.voxeldata.RenderVoxel;
+import com.sanjay900.Voxel2JSON.display.MainDisplay;
+import com.sanjay900.Voxel2JSON.display.MainFrame;
+import com.sanjay900.Voxel2JSON.json.Pallete;
+import com.sanjay900.Voxel2JSON.json.Pallete.XY;
+import com.sanjay900.Voxel2JSON.json.VoxFileFilter;
+import com.sanjay900.Voxel2JSON.utils.Utils;
 
+import lombok.Getter;
+@Getter
 public class Voxel2JSON {
+	@Getter
 	static String path;
 	public static MainChunk mainChunk;
 	public static Pallete p;
 	public static String name;
 	public static int size = 16;
 	public static MainFrame frame;
+	@Getter
+	static int version;
 	final static JFileChooser fc = new JFileChooser();
 	@SuppressWarnings("serial")
 	static class LabelAccessory extends JPanel {
@@ -65,11 +70,12 @@ public class Voxel2JSON {
 			this.add(merge);
 			merge.setSelected(true);
 		}
-		
+
 	}
-	
-	
+
+
 	public static void main(String[] args) throws Exception {
+
 		if (new File("Voxel2Json.settings").exists()) {
 			String s = Files.lines(new File("Voxel2Json.settings").toPath()).findFirst().orElse(null);
 			fc.setCurrentDirectory(new File(s));
@@ -83,7 +89,6 @@ public class Voxel2JSON {
 		if (fc.showOpenDialog(null) == JFileChooser.CANCEL_OPTION) return;
 		boolean uv = la.uv.isSelected();
 		size = la.bigmodel.isSelected()?48:16;
-		JSONObject display = new JSONObject();
 		path = fc.getSelectedFile().getPath();
 		path = FilenameUtils.removeExtension(path);
 		name = FilenameUtils.getBaseName(fc.getSelectedFile().getPath());
@@ -94,7 +99,13 @@ public class Voxel2JSON {
 		File file = new File(path+".vox");
 		FileInputStream f = new FileInputStream(file);
 		DataInputStream ds = new DataInputStream(f);
-		System.out.println("Magic:" + Utils.readString(ds)+" Version:"+Utils.getInt(ds));
+		String magic = Utils.readString(ds);
+		version = Utils.getInt(ds);
+		if ( !magic.equals("VOX ")) {
+			Utils.errorBox("The file you attempted to open was not recognised.", "Error!");
+			main(args);
+			return;
+		}
 		mainChunk = new MainChunk(ds,la.merge.isSelected());
 		ds.close();
 		f.close();
@@ -109,14 +120,14 @@ public class Voxel2JSON {
 		for (RenderVoxel v:mainChunk.voxelChunk.voxelsr) {
 			JSONObject element = new JSONObject();
 			BigDecimal zero = BigDecimal.ZERO;
-			element.put("from", floatc(new BigDecimal[]{
+			element.put("from", Utils.floatc(new BigDecimal[]{
 					v.xamt.compareTo(zero)!=-1?v.x:v.x.add(xdiff.multiply(v.xamt)),
-					v.zamt.compareTo(zero)!=-1?v.z:v.z.add(zdiff.multiply(v.zamt)),
-					v.yamt.compareTo(zero)!=-1?v.y:v.y.add(ydiff.multiply(v.yamt))}));
-			element.put("to",floatc(new BigDecimal[]{
+							v.zamt.compareTo(zero)!=-1?v.z:v.z.add(zdiff.multiply(v.zamt)),
+									v.yamt.compareTo(zero)!=-1?v.y:v.y.add(ydiff.multiply(v.yamt))}));
+			element.put("to",Utils.floatc(new BigDecimal[]{
 					v.xamt.compareTo(zero)==-1?v.x.add(xdiff):v.x.add(xdiff.multiply(v.xamt)),
-					v.zamt.compareTo(zero)==-1?v.z.add(zdiff):v.z.add(zdiff.multiply(v.zamt)),
-					v.yamt.compareTo(zero)==-1?v.y.add(ydiff):v.y.add(ydiff.multiply(v.yamt))}));
+							v.zamt.compareTo(zero)==-1?v.z.add(zdiff):v.z.add(zdiff.multiply(v.zamt)),
+									v.yamt.compareTo(zero)==-1?v.y.add(ydiff):v.y.add(ydiff.multiply(v.yamt))}));
 			JSONObject faces = new JSONObject();
 			JSONObject face = new JSONObject();
 			if (uv) {
@@ -133,15 +144,21 @@ public class Voxel2JSON {
 
 			mainChunk.voxelChunk.frame.contentPane.progressBar.setValue(i);
 		}
-
 		frame = new MainFrame();
 		frame.setVisible(true);
+		if (new File(path+".json").exists()) {
+			JSONObject orig = new JSONObject(StringUtils.join(Files.readAllLines(new File(path+".json").toPath())," "));
+			if (orig.has("display")) {
+				frame.fromDisplay(orig.getJSONObject("display"));
+			}
+		}
 		new MainDisplay();
 		mainChunk.voxelChunk.frame.contentPane.lblTotal.setText("Total: "+elements.length());
 		JSONObject textures = new JSONObject();
 		textures.put(name, "blocks/"+name);
 		textures.put("particle", "blocks/"+name);
 		object.put("textures", textures);
+		JSONObject display = frame.getDisplay(); 
 		if (!(display.length() == 0))
 			object.put("display", display);
 		object.put("elements",elements);
@@ -154,23 +171,5 @@ public class Voxel2JSON {
 		mainChunk.voxelChunk.frame.contentPane.overallProgress.setValue(6);
 		mainChunk.voxelChunk.frame.contentPane.btnOpenCompletedFile.setEnabled(true);
 	}
-	private static double[] floatc(BigDecimal[] old) {
-		double[] floats=new double[old.length];
-		for (int i = 0;i<old.length;i++) {
-			floats[i] = old[i].doubleValue();
-			if (floats[i] > (Voxel2JSON.size==16?16:32)) {
-				floats[i] = Voxel2JSON.size==16?16:32;
-			} else if (floats[i] < (Voxel2JSON.size==16?0:-16)){
-				floats[i] = Voxel2JSON.size==16?0:-16;
-			}
-		}
-		return floats;
-	}
-	public static void infoBox(String[] infoMessage, String titleBar)
-	{
-		JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.INFORMATION_MESSAGE);
-	}
-	public static String getPath() {
-		return path;
-	}
+
 }

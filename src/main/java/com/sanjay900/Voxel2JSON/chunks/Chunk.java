@@ -1,9 +1,9 @@
-package com.sanjay900.Voxel2JSON.main.chunks;
+package com.sanjay900.Voxel2JSON.chunks;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import com.sanjay900.Voxel2JSON.main.Utils;
+import com.sanjay900.Voxel2JSON.utils.Utils;
 
 public abstract class Chunk {
 	String id;
@@ -14,9 +14,4 @@ public abstract class Chunk {
 		size = Utils.getInt(ds);
 		childSize = Utils.getInt(ds);
 	}
-	public void printInfo() {
-		System.out.println("ID:"+id+",Size:"+size+",Children Size:"+childSize);
-		printExtraInfo();
-	}
-	public abstract void printExtraInfo();
 }

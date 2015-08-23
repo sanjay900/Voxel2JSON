@@ -1,10 +1,10 @@
-package com.sanjay900.Voxel2JSON.main.chunks;
+package com.sanjay900.Voxel2JSON.chunks;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import com.sanjay900.Voxel2JSON.main.Utils;
+import com.sanjay900.Voxel2JSON.utils.Utils;
 
 public class SizeChunk extends Chunk{
 	public BigDecimal x;
@@ -17,9 +17,5 @@ public class SizeChunk extends Chunk{
 		y = new BigDecimal(Utils.getInt(ds));
 		z = new BigDecimal(Utils.getInt(ds));
 		biggest = x.max(y).max(z);
-	}
-	@Override
-	public void printExtraInfo() {
-		System.out.println("Size: ["+x+","+y+","+z+"]");
 	}
 }
