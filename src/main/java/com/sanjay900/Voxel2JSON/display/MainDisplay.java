@@ -114,6 +114,8 @@ public class MainDisplay {
 	private void initGUI() {
 		glTranslatef(-9f, -9f, 0f);
 		drawGuiBorder();
+
+		glTranslatef(8f, 8f, -8f);
 		glRotatef(30, 1.0f, 0.0f, 0.0f); // Rotate On The X Axis
 		glRotatef(-135, 0.0f, 1.0f, 0.0f); // Rotate On The Y Axis
 	}
