@@ -60,6 +60,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 
 import com.sanjay900.Voxel2JSON.Voxel2JSON;
 import com.sanjay900.Voxel2JSON.chunks.voxeldata.RenderVoxel;
@@ -74,9 +75,17 @@ public class MainDisplay {
 	private DisplayMode displayMode;
 	private int texture;           // Storage For One Texture
 	private int guitexture;
+	private int gridtexture;
 	private float zoom = 1;
+	private float groundHeight = 0;
+	private float dir = 0.01f;
+	private float groundRot = 0;
+	private float dx = 0;
+	private float dy = 0;
+	private float pitch = 0;
+	private float yaw = 0;
 
-	public MainDisplay() {
+	public void run() {
 		try {
 			init();
 			while (!done) {
@@ -100,6 +109,15 @@ public class MainDisplay {
 		if (Mouse.isInsideWindow() && (Mouse.isButtonDown(0) || Mouse.isButtonDown(1) )&& !Mouse.isGrabbed()) {
 			Mouse.setGrabbed(true);
 		} 
+		if (Mouse.isButtonDown(0)) {
+			dx+=Mouse.getDX();
+			dy+=Mouse.getDY();
+
+		}
+		if (Mouse.isButtonDown(1)) {
+			yaw+=Mouse.getDX();
+			pitch+=Mouse.getDY();
+		}
 		if (!Mouse.isButtonDown(0) && !Mouse.isButtonDown(1)) {
 			Mouse.setGrabbed(false);
 		}
@@ -112,20 +130,30 @@ public class MainDisplay {
 		}
 	}
 	private void initGUI() {
-		glTranslatef(-9f, -9f, 0f);
 		drawGuiBorder();
+	}
+	private void initFloor() {
 
-		glTranslatef(8f, 8f, -8f);
-		glRotatef(30, 1.0f, 0.0f, 0.0f); // Rotate On The X Axis
-		glRotatef(-135, 0.0f, 1.0f, 0.0f); // Rotate On The Y Axis
+		drawFloor();
+		glTranslatef(0, groundHeight+=dir, 0f);
+		if (groundHeight > 16) {
+			dir =-0.01f;
+		}
+		if (groundHeight < -8) {
+			dir =0.01f;
+		}
+
 	}
 	private boolean render() {
 		initView();
+
+		glTranslatef(-dx, dy, 0);
+		glTranslatef(-9f, -9f, 0f);
 		if (Voxel2JSON.frame.type == ViewType.GUI) {
 			initGUI();
 		}
+		glTranslatef(-3.25f, 2.45f,10f);
 		rotateView();
-		glTranslatef(-8f, -8f, 8f);
 		drawCubes();
 		return true;
 	}
@@ -138,13 +166,32 @@ public class MainDisplay {
 		glMatrixMode(GL_MODELVIEW_MATRIX);
 	}
 	public void rotateView() {
-		glRotatef((Voxel2JSON.frame.rx.getValue()/100f), 0.0f, 0.0f, 1.0f); // Rotate On The Z Axis
-		glRotatef((Voxel2JSON.frame.ry.getValue()/100f), 0.0f, 1.0f, 0.0f); // Rotate On The Y Axis
-		glRotatef((Voxel2JSON.frame.rz.getValue()/100f), 1.0f, 0.0f, 0.0f); // Rotate On The X Axis
-		
+		glTranslatef(12, 0, 12f);
+		glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
+		glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
+		float fx = 0;
+		if (Voxel2JSON.frame.type != ViewType.GUI) {
+			if (Voxel2JSON.frame.type == ViewType.ON_FLOOR) {
+				fx = -20;
+			}
+			glRotatef(pitch, 1.0f, 0.0f, 0.0f);
+			glRotatef(yaw, 0.0f, 1.0f, 0.0f);
+		} else {
+			glTranslatef(1, -6, 0);
+		}
+		if (Voxel2JSON.frame.type == ViewType.ON_FLOOR) {
+			initFloor();
+		}
+
+		if (Voxel2JSON.frame.type == ViewType.ON_FLOOR)
+			glRotatef(groundRot+=0.1, 0.0F, 1.0F, 0.0F);
+		glTranslatef(Voxel2JSON.frame.tx.getValue()/50f, (Voxel2JSON.frame.ty.getValue()/50f)+fx, (Voxel2JSON.frame.tz.getValue()/50f));
+		glRotatef((Voxel2JSON.frame.ry.getValue()/100f), 0.0f, 1.0f, 0.0f);
+		glRotatef((Voxel2JSON.frame.rx.getValue()/100f), 1.0f, 0.0f, 0.0f);
+		glRotatef((Voxel2JSON.frame.rz.getValue()/100f), 0.0f, 0.0f, 1.0f);
 		glScalef((Voxel2JSON.frame.sz.getValue()/100f)*0.625f, (Voxel2JSON.frame.sy.getValue()/100f)*0.625f, (Voxel2JSON.frame.sx.getValue()/100f)*0.625f);
-		//glTranslatef(8, 5, -1f);
-		glTranslatef(Voxel2JSON.frame.tx.getValue()/50f, Voxel2JSON.frame.ty.getValue()/50f, (Voxel2JSON.frame.tz.getValue()/50f)-16f);
+
+		glTranslatef(-8f, -8f, -8f);
 	}
 	public void drawCubes() {
 		BigDecimal s = new BigDecimal(Voxel2JSON.size);
@@ -232,6 +279,23 @@ public class MainDisplay {
 		glVertex3f(x,yd,z); 
 		glEnd();
 	}
+
+	private void drawFloor() {
+		glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		glBindTexture(GL_TEXTURE_2D, gridtexture); // Select Our Texture
+		glBegin(GL_QUADS);
+		float texCoord = 1;
+		glTexCoord2f(0, 0);
+		glVertex3f(-16, 8, -16); 
+		glTexCoord2f(texCoord, 0);
+		glVertex3f(16, 8, -16); 
+		glTexCoord2f(texCoord, texCoord);
+		glVertex3f(16, 8, 16); 
+		glTexCoord2f(0, texCoord);
+		glVertex3f(-16, 8, 16); 
+		glEnd();
+	}
 	public void drawGuiBorder() {
 
 
@@ -297,6 +361,7 @@ public class MainDisplay {
 	private void loadTextures() {
 		texture = loadTexture(Voxel2JSON.getPath()+".png",GL_TEXTURE0);
 		guitexture = loadTexture("textures/gui.png",GL_TEXTURE0);
+		gridtexture = loadTexture("textures/grid.png",GL_TEXTURE0);
 	}
 
 	private void initGL() {
@@ -373,5 +438,12 @@ public class MainDisplay {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
 				GL_LINEAR_MIPMAP_LINEAR);
 		return texId;
+	}
+	public void reset() {
+		dx=0;
+		dy=0;
+		pitch=0;
+		yaw=0;
+		
 	}
 }

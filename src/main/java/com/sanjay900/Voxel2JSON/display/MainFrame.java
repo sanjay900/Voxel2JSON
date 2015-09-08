@@ -27,6 +27,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
+import com.sanjay900.Voxel2JSON.Voxel2JSON;
 
 import lombok.AllArgsConstructor;
 
@@ -51,7 +52,7 @@ public class MainFrame extends JFrame {
 		Arrays.stream(ViewType.values()).forEach(type->displays.put(type, new DisplayObject()));
 		setTitle("Item Display Properties - In Hand");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 490, 411);
+		setBounds(100, 100, 490, 579);
 		setPreferredSize(new Dimension(490,411));
 
 		JMenuBar menuBar = new JMenuBar();
@@ -111,7 +112,7 @@ public class MainFrame extends JFrame {
 		contentPane.setBounds(0,0, 489, 310);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new GridLayout(3, 1, 0, 0));
+		contentPane.setLayout(new GridLayout(4, 1, 0, 0));
 
 		JPanel rotation = new JPanel();
 		rotation.setBorder(BorderFactory.createTitledBorder("Rotation"));
@@ -277,6 +278,14 @@ public class MainFrame extends JFrame {
 		sxl.getDocument().addDocumentListener(new SliderSync(sxl,sx));
 		syl.getDocument().addDocumentListener(new SliderSync(syl,sy));
 		szl.getDocument().addDocumentListener(new SliderSync(szl,sz));
+		
+		JButton btnReset = new JButton("Reset View");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Voxel2JSON.mainDisplay.reset();
+			}
+		});
+		contentPane.add(btnReset);
 	}
 	protected void loadDisplay(ViewType newType) {
 		DisplayObject old = displays.get(type);

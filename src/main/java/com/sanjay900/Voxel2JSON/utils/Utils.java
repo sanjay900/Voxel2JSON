@@ -1,6 +1,7 @@
 package com.sanjay900.Voxel2JSON.utils;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -15,8 +16,11 @@ public class Utils {
 	public static String readString(DataInputStream ds) throws IOException{
 		byte[] b = new byte[4];
 		ds.read(b, 0, 4);
+		
 		return new String(b, "UTF-8");
+		
 	}
+	
 	public static int getInt(DataInputStream ds) throws IOException{
 		byte[] b = new byte[4];
 		ds.read(b, 0, 4);

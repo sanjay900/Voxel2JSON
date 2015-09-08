@@ -42,6 +42,7 @@ public class Voxel2JSON {
 	public static String name;
 	public static int size = 16;
 	public static MainFrame frame;
+	public static MainDisplay mainDisplay;
 	@Getter
 	static int version;
 	final static JFileChooser fc = new JFileChooser();
@@ -152,7 +153,8 @@ public class Voxel2JSON {
 				frame.fromDisplay(orig.getJSONObject("display"));
 			}
 		}
-		new MainDisplay();
+		mainDisplay = new MainDisplay();
+		mainDisplay.run();
 		mainChunk.voxelChunk.frame.contentPane.lblTotal.setText("Total: "+elements.length());
 		JSONObject textures = new JSONObject();
 		textures.put(name, "blocks/"+name);
