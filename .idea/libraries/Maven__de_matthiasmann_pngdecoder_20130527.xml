@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: de.matthiasmann:pngdecoder:20130527">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/matthiasmann/pngdecoder/20130527/pngdecoder-20130527.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/de/matthiasmann/pngdecoder/20130527/pngdecoder-20130527-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/matthiasmann/pngdecoder/20130527/pngdecoder-20130527-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

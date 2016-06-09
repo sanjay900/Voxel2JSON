@@ -12,6 +12,8 @@
 		<lwjgl.version>2.8.2</lwjgl.version>
 		<slick.version>3.1.0-M2</slick.version>
 		<junit.version>4.10</junit.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<repositories>
 		<repository>
@@ -59,25 +61,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.lwjgl.lwjgl</groupId>
-			<artifactId>lwjgl</artifactId>
-			<version>${lwjgl.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.lwjgl.lwjgl</groupId>
-			<artifactId>lwjgl_util</artifactId>
-			<version>2.8.4</version>
-		</dependency>
-		<dependency>
 			<groupId>java3d</groupId>
 			<artifactId>vecmath</artifactId>
 			<version>1.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slick2d</groupId>
-			<artifactId>slick2d-core</artifactId>
-			<version>1.0.1</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -85,8 +71,8 @@
 			<version>3.0</version>
 			<scope>compile</scope>
 		</dependency>
-
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -101,8 +87,6 @@
 							<mainClass>com.sanjay900.Voxel2JSON.main.Voxel2JSON</mainClass>
 						</manifest>
 					</archive>
-					<source>1.8</source>
-					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -122,55 +106,24 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.googlecode.mavennatives</groupId>
-				<artifactId>maven-nativedependencies-plugin</artifactId>
-				<version>0.0.5</version>
-				<executions>
-					<execution>
-						<id>unpacknatives</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>ideauidesigner-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>javac2</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <fork>true</fork>
+                    <debug>true</debug>
+                    <failOnError>true</failOnError>
+                </configuration>
+            </plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											com.googlecode.mavennatives
-										</groupId>
-										<artifactId>
-											maven-nativedependencies-plugin
-										</artifactId>
-										<versionRange>
-											[0.0.5,)
-										</versionRange>
-										<goals>
-											<goal>copy</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 </project>

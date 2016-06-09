@@ -8,18 +8,17 @@ import javax.swing.border.EmptyBorder;
 
 public class ProgressFrame extends javax.swing.JFrame {
 
-	public ProgressPanel contentPane;
+	public ProgressPanel2 contentPane;
 	/**
 	 * Create the frame.
 	 */
 	public ProgressFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 486, 300);
-		contentPane = new ProgressPanel();
-		contentPane.lblTotal.setText("Total: Calculating");
-		contentPane.lblMergedVoxels.setText("Merged Voxels: Calculating");
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		contentPane = new ProgressPanel2();
+		contentPane.getVoxelCount().setText("Total: Calculating");
+		contentPane.getMergedVoxelCount().setText("Merged Voxels: Calculating");
+		setContentPane(contentPane.$$$getRootComponent$$$());
 	}
 
 }

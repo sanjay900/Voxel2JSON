@@ -1,9 +1,9 @@
 package com.sanjay900.Voxel2JSON.chunks.voxeldata;
 
 public class Coordinate {
-	int x;
-	int y;
-	int z;
+	public int x;
+    public int y;
+    public int z;
 	public Coordinate(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
@@ -14,26 +14,27 @@ public class Coordinate {
 		y = voxel.y;
 		z = voxel.z;
 	}
-	@Override
-	public boolean equals(Object other) {
-		if (!(other instanceof Coordinate)) return false;
-		Coordinate oc = (Coordinate) other;
-		return (oc.x == x &&oc.y == y&&oc.z == z);
-	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		int temp;
-		temp = x;
-		result = prime * result + (temp ^ (temp >>> 32));
-		temp = y;
-		result = prime * result + (temp ^ (temp >>> 32));
-		temp = z;
-		result = prime * result + (temp ^ (temp >>> 32));
-		return result;
-	}
-	@Override
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Coordinate that = (Coordinate) o;
+
+        return x == that.x && y == that.y && z == that.z;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        return result;
+    }
+
+    @Override
 	public String toString() {
 		return x+","+y+","+z;
 	}

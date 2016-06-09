@@ -8,9 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -18,14 +17,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.sanjay900.Voxel2JSON.chunks.voxeldata.Voxel;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.sanjay900.Voxel2JSON.chunks.MainChunk;
-import com.sanjay900.Voxel2JSON.chunks.voxeldata.RenderVoxel;
-import com.sanjay900.Voxel2JSON.display.MainDisplay;
 import com.sanjay900.Voxel2JSON.display.MainFrame;
 import com.sanjay900.Voxel2JSON.json.Pallete;
 import com.sanjay900.Voxel2JSON.json.Pallete.XY;
@@ -40,9 +38,8 @@ public class Voxel2JSON {
 	public static MainChunk mainChunk;
 	public static Pallete p;
 	public static String name;
-	public static int size = 16;
+	public static double MC_SIZE = 16;
 	public static MainFrame frame;
-	public static MainDisplay mainDisplay;
 	@Getter
 	static int version;
 	final static JFileChooser fc = new JFileChooser();
@@ -56,7 +53,7 @@ public class Voxel2JSON {
 			JLabel text = new JLabel("Item Model?", SwingConstants.CENTER);
 			text.setPreferredSize(new Dimension(140, 10));
 			this.add(text);
-			text = new JLabel("(Bigger size)", SwingConstants.CENTER);
+			text = new JLabel("(Bigger MC_SIZE)", SwingConstants.CENTER);
 			text.setPreferredSize(new Dimension(140, 10));
 			this.add(text);
 			this.add(bigmodel);
@@ -89,7 +86,7 @@ public class Voxel2JSON {
 		fc.setAcceptAllFileFilterUsed(false);
 		if (fc.showOpenDialog(null) == JFileChooser.CANCEL_OPTION) return;
 		boolean uv = la.uv.isSelected();
-		size = la.bigmodel.isSelected()?48:16;
+		MC_SIZE = la.bigmodel.isSelected()?48:16;
 		path = fc.getSelectedFile().getPath();
 		path = FilenameUtils.removeExtension(path);
 		name = FilenameUtils.getBaseName(fc.getSelectedFile().getPath());
@@ -112,38 +109,35 @@ public class Voxel2JSON {
 		f.close();
 		JSONObject object = new JSONObject();
 		JSONArray elements = new JSONArray();
-		BigDecimal s = new BigDecimal(size);
-		BigDecimal xdiff = s.divide(mainChunk.sizeChunk.x,3, RoundingMode.HALF_UP);
-		BigDecimal ydiff = s.divide(mainChunk.sizeChunk.y,3, RoundingMode.HALF_UP);
-		BigDecimal zdiff = s.divide(mainChunk.sizeChunk.z,3, RoundingMode.HALF_UP);
+        double xdiff = MC_SIZE/mainChunk.sizeChunk.x;
+        double ydiff = MC_SIZE/mainChunk.sizeChunk.y;
+        double zdiff = MC_SIZE/mainChunk.sizeChunk.z;
+        double xmult = mainChunk.sizeChunk.x;
+        double ymult = mainChunk.sizeChunk.y;
+        double zmult = mainChunk.sizeChunk.z;
 		int i = 0;
-		mainChunk.voxelChunk.frame.contentPane.progressBar.setMaximum(mainChunk.voxelChunk.voxelsr.size());
-		for (RenderVoxel v:mainChunk.voxelChunk.voxelsr) {
+		mainChunk.voxelChunk.frame.contentPane.getActionProgress().setMaximum(mainChunk.voxelChunk.voxels.size());
+		for (Voxel v:mainChunk.voxelChunk.voxels) {
 			JSONObject element = new JSONObject();
-			BigDecimal zero = BigDecimal.ZERO;
-			element.put("from", Utils.floatc(new BigDecimal[]{
-					v.xamt.compareTo(zero)!=-1?v.x:v.x.add(xdiff.multiply(v.xamt)),
-							v.zamt.compareTo(zero)!=-1?v.z:v.z.add(zdiff.multiply(v.zamt)),
-									v.yamt.compareTo(zero)!=-1?v.y:v.y.add(ydiff.multiply(v.yamt))}));
-			element.put("to",Utils.floatc(new BigDecimal[]{
-					v.xamt.compareTo(zero)==-1?v.x.add(xdiff):v.x.add(xdiff.multiply(v.xamt)),
-							v.zamt.compareTo(zero)==-1?v.z.add(zdiff):v.z.add(zdiff.multiply(v.zamt)),
-									v.yamt.compareTo(zero)==-1?v.y.add(ydiff):v.y.add(ydiff.multiply(v.yamt))}));
-			JSONObject faces = new JSONObject();
+            double ox = v.x/xmult*MC_SIZE, oy = v.y/ymult*MC_SIZE, oz = v.z/zmult*MC_SIZE,
+                    dx = ox+(xdiff*v.xamt), dy = oy + (ydiff*v.yamt), dz = oz+ +(zdiff*v.zamt);
+			element.put("from", new double[]{MC_SIZE-ox,oz,oy});
+			element.put("to",new double[]{MC_SIZE-dx,dz,dy});
+            JSONObject faces = new JSONObject();
 			JSONObject face = new JSONObject();
 			if (uv) {
 				XY xy = p.getXY(v.colourIndex);
 				face.put("uv", new double[]{xy.x+0.01,xy.y+0.01,xy.x+0.99,xy.y+0.99});
 			}
 			face.put("texture", "#"+name);
-			v.todraw.forEach(bface -> faces.put(bface.dir, face));
+			Arrays.asList("north","south","east","west","up","down").forEach(bface -> faces.put(bface, face));
 			if (faces.length() != 0) {
 				element.put("faces", faces);
 				elements.put(element);
 			}
-			mainChunk.voxelChunk.frame.contentPane.subStatus.setText("Saving face "+ (++i)+" to JSON model");
+			mainChunk.voxelChunk.frame.contentPane.getActionSubtitle().setText("Saving face "+ (++i)+" to JSON model");
 
-			mainChunk.voxelChunk.frame.contentPane.progressBar.setValue(i);
+			mainChunk.voxelChunk.frame.contentPane.getActionProgress().setValue(i);
 		}
 		frame = new MainFrame();
 		frame.setVisible(true);
@@ -153,9 +147,7 @@ public class Voxel2JSON {
 				frame.fromDisplay(orig.getJSONObject("display"));
 			}
 		}
-		mainDisplay = new MainDisplay();
-		mainDisplay.run();
-		mainChunk.voxelChunk.frame.contentPane.lblTotal.setText("Total: "+elements.length());
+		mainChunk.voxelChunk.frame.contentPane.getVoxelCount().setText("Total: "+elements.length());
 		JSONObject textures = new JSONObject();
 		textures.put(name, "blocks/"+name);
 		textures.put("particle", "blocks/"+name);
@@ -165,13 +157,11 @@ public class Voxel2JSON {
 			object.put("display", display);
 		object.put("elements",elements);
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(path+".json "), "utf-8"))) {
+				new FileOutputStream(path+".json"), "utf-8"))) {
 			writer.write(object.toString());
 		}
-		mainChunk.voxelChunk.frame.contentPane.subStatus.setText("Saved Model!");
-		mainChunk.voxelChunk.frame.contentPane.overallInfo.setText("Saved Model!");
-		mainChunk.voxelChunk.frame.contentPane.overallProgress.setValue(6);
-		mainChunk.voxelChunk.frame.contentPane.btnOpenCompletedFile.setEnabled(true);
+		mainChunk.voxelChunk.frame.contentPane.getActionSubtitle().setText("Saved Model!");
+		mainChunk.voxelChunk.frame.contentPane.getOverallProgress().setValue(6);
 	}
 
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum ViewType {
-	IN_HAND("thirdperson"),ON_HEAD("head"),ON_FLOOR("ground"),ON_WALL("fixed"),FIRST_PERSON("firstperson"),GUI("gui");
+	IN_HAND("thirdperson_right"),ON_HEAD("head"),ON_FLOOR("ground"),ON_WALL("fixed"),FIRST_PERSON("firstperson_right"),GUI("gui");
 	@Getter
 	String modelName;
 }

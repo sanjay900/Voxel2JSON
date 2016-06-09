@@ -59,55 +59,43 @@ public class MainFrame extends JFrame {
 		setJMenuBar(menuBar);
 
 		JButton btnInHand = new JButton("In Hand");
-		btnInHand.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
-				loadDisplay(ViewType.IN_HAND);
-			}
-		});
+		btnInHand.addActionListener(e -> {
+            setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+            loadDisplay(ViewType.IN_HAND);
+        });
 		menuBar.add(btnInHand);
 		
 		JButton btnOnHead = new JButton("On Head");
-		btnOnHead.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
-				loadDisplay(ViewType.ON_HEAD);
-			}
-		});
+		btnOnHead.addActionListener(e -> {
+            setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+            loadDisplay(ViewType.ON_HEAD);
+        });
 		menuBar.add(btnOnHead);
 		
 		JButton btnOnFloor = new JButton("On Floor");
 		menuBar.add(btnOnFloor);
-		btnOnFloor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
-				loadDisplay(ViewType.ON_FLOOR);
-			}
-		});
+		btnOnFloor.addActionListener(e -> {
+            setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+            loadDisplay(ViewType.ON_FLOOR);
+        });
 		JButton btnOnWall = new JButton("On Wall");
 		menuBar.add(btnOnWall);
-		btnOnWall.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
-				loadDisplay(ViewType.ON_WALL);
-			}
-		});
+		btnOnWall.addActionListener(e -> {
+            setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+            loadDisplay(ViewType.ON_WALL);
+        });
 		JButton btnstPerson = new JButton("First Person");
 		menuBar.add(btnstPerson);
-		btnstPerson.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
-				loadDisplay(ViewType.FIRST_PERSON);
-			}
-		});
+		btnstPerson.addActionListener(e -> {
+            setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+            loadDisplay(ViewType.FIRST_PERSON);
+        });
 		JButton btnGui = new JButton("GUI");
 		menuBar.add(btnGui);
-		btnGui.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
-				loadDisplay(ViewType.GUI);
-			}
-		});
+		btnGui.addActionListener(e -> {
+            setTitle("Item Display Properties - "+((JButton)e.getSource()).getText());
+            loadDisplay(ViewType.GUI);
+        });
 		contentPane = new JPanel();
 		contentPane.setBounds(0,0, 489, 310);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -161,31 +149,19 @@ public class MainFrame extends JFrame {
 		JTextField syl = new JTextField("1");
 		JTextField szl = new JTextField("1");
 		rx = new JSlider();
-		rx.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				rxl.setText(rx.getValue()/100f+"");
-			}
-		});
+		rx.addChangeListener(e -> rxl.setText(rx.getValue()/100f+""));
 		rx.setMinimum(-18000);
 		rx.setMaximum(18000);
 		rx.setValue(0);
 
 		ry = new JSlider();
-		ry.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				ryl.setText(ry.getValue()/100f+"");
-			}
-		});
+		ry.addChangeListener(e -> ryl.setText(ry.getValue()/100f+""));
 		ry.setValue(0);
 		ry.setMinimum(-18000);
 		ry.setMaximum(18000);
 
 		rz = new JSlider();
-		rz.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				rzl.setText(rz.getValue()/100f+"");
-			}
-		});
+		rz.addChangeListener(e -> rzl.setText(rz.getValue()/100f+""));
 		rz.setMinimum(-18000);
 		rz.setMaximum(18000);
 		rz.setValue(0);
@@ -198,31 +174,19 @@ public class MainFrame extends JFrame {
 
 		//Translation
 		tx = new JSlider();
-		tx.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				txl.setText(tx.getValue()/100f+"");
-			}
-		});
+		tx.addChangeListener(e -> txl.setText(tx.getValue()/100f+""));
 		tx.setMinimum(-1500);
 		tx.setMaximum(1500);
 		tx.setValue(0);
 
 		ty = new JSlider();
-		ty.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				tyl.setText(ty.getValue()/100f+"");
-			}
-		});
+		ty.addChangeListener(e -> tyl.setText(ty.getValue()/100f+""));
 		ty.setValue(0);
 		ty.setMinimum(-1500);
 		ty.setMaximum(1500);
 
 		tz = new JSlider();
-		tz.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				tzl.setText(tz.getValue()/100f+"");
-			}
-		});
+		tz.addChangeListener(e -> tzl.setText(tz.getValue()/100f+""));
 		tz.setMinimum(-1500);
 		tz.setMaximum(1500);
 		tz.setValue(0);
@@ -234,31 +198,19 @@ public class MainFrame extends JFrame {
 		translation.add(tzl, "3, 4, fill, fill");
 		//scale
 		sx = new JSlider();
-		sx.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				sxl.setText(sx.getValue()/100f+"");
-			}
-		});
+		sx.addChangeListener(e -> sxl.setText(sx.getValue()/100f+""));
 		sx.setMinimum(-400);
 		sx.setMaximum(400);
 		sx.setValue(100);
 
 		sy = new JSlider();
-		sy.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				syl.setText(sy.getValue()/100f+"");
-			}
-		});
+		sy.addChangeListener(e -> syl.setText(sy.getValue()/100f+""));
 		sy.setValue(100);
 		sy.setMinimum(-400);
 		sy.setMaximum(400);
 
 		sz = new JSlider();
-		sz.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				szl.setText(sz.getValue()/100f+"");
-			}
-		});
+		sz.addChangeListener(e -> szl.setText(sz.getValue()/100f+""));
 		sz.setMinimum(-400);
 		sz.setMaximum(400);
 		sz.setValue(100);
@@ -280,11 +232,6 @@ public class MainFrame extends JFrame {
 		szl.getDocument().addDocumentListener(new SliderSync(szl,sz));
 		
 		JButton btnReset = new JButton("Reset View");
-		btnReset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Voxel2JSON.mainDisplay.reset();
-			}
-		});
 		contentPane.add(btnReset);
 	}
 	protected void loadDisplay(ViewType newType) {
