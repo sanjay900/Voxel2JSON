@@ -1,3 +1,3 @@
 # Voxel2JSON
-An in-progress converter for magica voxel to convert to minecraft's JSON format
-Currently a bit buggy, needs a little work.
+A finished converter that converts MagicaVoxel .VOX files to a .PNG texture + a .JSON Minecraft Model
+![YAP](http://i.imgur.com/a/gWoLE.png)
