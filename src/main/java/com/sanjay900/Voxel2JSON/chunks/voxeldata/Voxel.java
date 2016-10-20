@@ -4,9 +4,10 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
-import lombok.ToString;
 
 @AllArgsConstructor
 public class Voxel {
@@ -17,16 +18,16 @@ public class Voxel {
         colourIndex = ds.read();
     }
     public Voxel clone() {
-        return new Voxel(x,y,z,xamt,yamt,zamt,colourIndex,near,todraw);
+        return new Voxel(x,y,z,xamt,yamt,zamt,colourIndex, uncovered,todraw);
     }
     public Coordinate getRelative(BlockFace b) {
         switch (b) {
             case XADD:
-                return new Coordinate(x+xamt+1,y,z);
+                return new Coordinate(x+xamt,y,z);
             case YADD:
-                return new Coordinate(x,y+yamt+1,z);
+                return new Coordinate(x,y+yamt,z);
             case ZADD:
-                return new Coordinate(x,y,z+zamt+1);
+                return new Coordinate(x,y,z+zamt);
             case XSUB:
                 return new Coordinate(x-1,y,z);
             case YSUB:
@@ -38,27 +39,27 @@ public class Voxel {
         }
 
     }
-    public ArrayList<Coordinate> getRelatives(BlockFace b) {
-        ArrayList<Coordinate> coords = new ArrayList<>();
+    public List<Voxel> getRelatives(BlockFace b, Map<Coordinate, Voxel> voxels) {
+        ArrayList<Voxel> coords = new ArrayList<>();
         switch (b) {
             case XADD:
                 for (int yd=0; yd<yamt; yd++) {
                     for (int zd=0; zd<zamt; zd++) {
-                        coords.add(new Coordinate(x+xamt,y+yd,z+zd));
+                        coords.add(voxels.get(new Coordinate(x+xamt,y+yd,z+zd)));
                     }
                 }
                 break;
             case YADD:
                 for (int xd=0; xd<xamt; xd++) {
                     for (int zd=0; zd<zamt; zd++) {
-                        coords.add(new Coordinate(x+xd,y+yamt,z+zd));
+                        coords.add(voxels.get(new Coordinate(x+xd,y+yamt,z+zd)));
                     }
                 }
                 break;
             case ZADD:
-                for (int xd=0; xd<yamt; xd++) {
+                for (int xd=0; xd<xamt; xd++) {
                     for (int yd=0; yd<yamt; yd++) {
-                        coords.add(new Coordinate(x+xd,y+yd,z+zamt));
+                        coords.add(voxels.get(new Coordinate(x+xd,y+yd,z+zamt)));
                     }
                 }
                 break;
@@ -89,7 +90,7 @@ public class Voxel {
     public int yamt = 1;
     public int zamt = 1;
     public int colourIndex;
-    public ArrayList<BlockFace> near = new ArrayList<>();
+    public ArrayList<BlockFace> uncovered = new ArrayList<>();
 
     public ArrayList<BlockFace> todraw = new ArrayList<>(Arrays.asList(BlockFace.values()));
 

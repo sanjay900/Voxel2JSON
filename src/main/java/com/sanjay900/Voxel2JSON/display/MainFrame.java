@@ -21,6 +21,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import lombok.Getter;
 import org.json.JSONObject;
 
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -32,19 +33,12 @@ import com.sanjay900.Voxel2JSON.Voxel2JSON;
 import lombok.AllArgsConstructor;
 
 public class MainFrame extends JFrame {
-
+	@Getter
 	private JPanel contentPane;
-	JSlider rx;
-	JSlider ry;
-	JSlider rz;
-	JSlider tx;
-	JSlider ty;
-	JSlider tz;
-	JSlider sx;
-	JSlider sy;
-	JSlider sz;
-	HashMap<ViewType,DisplayObject> displays = new HashMap<>();
-	ViewType type = ViewType.IN_HAND;
+	@Getter
+	private JSlider rx, ry,rz,tx,ty,tz,sx,sy,sz;
+	private HashMap<ViewType,DisplayObject> displays = new HashMap<>();
+	private ViewType type = ViewType.IN_HAND;
 	/**
 	 * Create the frame.
 	 */
@@ -299,7 +293,10 @@ public class MainFrame extends JFrame {
 	}
 	public JSONObject getDisplay() {
 		JSONObject display = new JSONObject();
-		displays.entrySet().stream().forEach(entry -> {if (entry.getValue().toJSON().length() != 0) display.put(entry.getKey().getModelName(), entry.getValue().toJSON());});
+		displays.entrySet().forEach(entry -> {
+			if (entry.getValue().toJSON().length() != 0)
+				display.put(entry.getKey().getModelName(), entry.getValue().toJSON());
+		});
 		return display;
 	}
 
