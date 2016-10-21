@@ -106,4 +106,8 @@ public class Voxel {
                 ", colourIndex=" + colourIndex +
                 '}';
     }
+
+    public void reset() {
+        xamt=yamt=zamt=1;
+    }
 }

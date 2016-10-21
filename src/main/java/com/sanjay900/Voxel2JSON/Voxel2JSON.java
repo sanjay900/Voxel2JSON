@@ -236,9 +236,13 @@ public class Voxel2JSON extends PApplet{
 		frame = new MainFrame();
 		frame.setVisible(true);
 		if (new File(path+".json").exists()) {
-			JSONObject orig = new JSONObject(StringUtils.join(Files.readAllLines(new File(path+".json").toPath())," "));
-			if (orig.has("display")) {
-				frame.fromDisplay(orig.getJSONObject("display"));
+			try {
+				JSONObject orig = new JSONObject(StringUtils.join(Files.readAllLines(new File(path + ".json").toPath()), " "));
+				if (orig.has("display")) {
+					frame.fromDisplay(orig.getJSONObject("display"));
+				}
+			} catch (Exception ex) {
+				Utils.errorBox("There was an error reading the previous model.\n"+ex.getLocalizedMessage(),"Error");
 			}
 		}
 		mainChunk.voxelChunk.frame.contentPane.getVoxelCount().setText("Total: "+elements.length());
